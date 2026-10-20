@@ -1,0 +1,238 @@
+\input{preambule}
+\usepackage[french]{babel}
+\usepackage[colorlinks=true,linkcolor=bordeaux,urlcolor=bordeaux]{hyperref}
+\hypersetup{pdftitle={Da Capo — manuel d'utilisation},pdfauthor={},pdfcreator={Da Capo}}
+\boite{astucebox}{orl}{or!85!black}{\faLightbulb}{Bon à savoir}
+\boite{securitebox}{sapinl}{sapin}{\faShield*}{Vos partitions sont en sécurité}
+\boite{attentionbox}{alertl}{alert}{\faExclamationTriangle}{Attention}
+\newcommand{\astuce}[1]{\par\needspace{5\baselineskip}\begin{astucebox}#1\end{astucebox}}
+\newcommand{\attention}[1]{\par\needspace{5\baselineskip}\begin{attentionbox}#1\end{attentionbox}}
+\definecolor{alert}{HTML}{B5382B}
+\definecolor{alertl}{HTML}{F8E6E3}
+\fancyhead[L]{\sffamily\small\color{bordeaux}\textbf{DA CAPO — MANUEL}}
+\fancyhead[R]{\sffamily\small\color{summit}\leftmark}
+\input{version}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2.2cm}
+\includegraphics[width=3.6cm]{../../logo_1024.png}\par
+\vspace{8mm}
+{\sffamily\Huge\bfseries\color{bordeaux} DA CAPO\par}
+\vspace{3mm}
+{\sffamily\LARGE\color{ink} Sortir ses partitions de Finale\par}
+\vspace{2mm}
+{\sffamily\large\color{summit} Manuel d'utilisation \textbullet{} version \versiondacapo\par}
+\vspace{12mm}
+\begin{tcolorbox}[enhanced,width=0.82\linewidth,colback=orl,colframe=or,arc=4pt,boxrule=1.2pt,left=5mm,right=5mm,top=3mm,bottom=3mm]
+\sffamily\centering
+\textit{Da capo} : « depuis le début », en musique.\\[2mm]
+\raggedright
+\textbf{1.} Dossiers de partitions \quad \textbf{2.} Dossier de travail \quad \textbf{3.} Finale \quad \textbf{4.} Commencer
+\end{tcolorbox}
+\vfill
+{\footnotesize\color{summit}\sffamily Windows \textbullet{} macOS \textbullet{} Linux\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Pourquoi Da Capo}
+
+Finale n'est plus développé depuis 2024. Il fonctionne encore, mais plus aucune mise à jour ne
+viendra le réparer si un jour Windows le casse. Or ses fichiers \fichier{.mus} et \fichier{.musx}
+\textbf{ne s'ouvrent que dans Finale}. La porte de sortie s'appelle \textbf{MusicXML} : un format
+ouvert, que lisent MuseScore Studio (libre et gratuit), Dorico et Sibelius.
+
+Finale sait exporter une partition en MusicXML, mais une à la fois. Avec des centaines de
+partitions, c'est des jours de clics. \textbf{Da Capo fait ces clics à votre place}, partition après
+partition, pendant que vous faites autre chose — et vérifie le résultat.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{>{\bfseries\color{bordeaux}}l X}
+\toprule
+1. Trouver & toutes les partitions Finale des dossiers choisis, sous-dossiers compris. \\
+2. Copier & chacune dans le dossier de travail, copie vérifiée octet par octet. \\
+3. Exporter & Finale ouvre chaque \emph{copie}, l'exporte en MusicXML (et en PDF de référence), la referme. \\
+4. Vérifier & chaque MusicXML est relu : parties, mesures, notes, paroles, nuances. \\
+5. Préparer & chaque MusicXML devient une partition MuseScore (\fichier{.mscz}) + un PDF pour comparer. \\
+6. Rendre compte & \fichier{rapport.html} : ce qui a marché, ce qui a échoué, ce qui mérite un coup d'œil. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{securitebox}
+\begin{itemize}
+\item Les fichiers d'origine ne sont \textbf{jamais ouverts ni modifiés} : Finale ne voit que des copies.
+\item Les copies sont vérifiées (empreinte SHA-256) et mises en lecture seule.
+\item Rien n'est envoyé sur Internet : tout se passe sur votre ordinateur.
+\end{itemize}
+\end{securitebox}
+
+\section{Avant de commencer}
+
+\begin{enumerate}
+\item \textbf{Installez Da Capo} : \fichier{DaCapo-Setup.exe} sous Windows (aucun mot de passe
+      administrateur). Au premier lancement, Windows peut afficher « Windows a protégé votre
+      ordinateur » : \menu{Informations complémentaires} → \menu{Exécuter quand même}.
+\item \textbf{Installez MuseScore Studio} (facultatif mais conseillé) depuis \fichier{musescore.org}
+      — et non \fichier{musescore.com}, qui est un site de partitions en partie payant. Le logiciel
+      est gratuit et le reste.
+\item \textbf{Ouvrez une fois à la main le Finale que Da Capo utilisera}, surtout s'il ne sert jamais :
+      réglez ce qu'il demande au premier lancement (activation, mise à jour, fenêtre d'accueil), puis
+      \textbf{refermez-le}.
+\item \textbf{Avant Finale 25}, le PDF de référence passe par l'imprimante virtuelle
+      \textbf{CutePDF Writer} (gratuite) : vérifiez qu'elle est installée.
+\end{enumerate}
+
+\astuce{Si plusieurs Finale sont installés, Da Capo propose le plus récent : il ouvre sans
+difficulté les fichiers des anciennes versions et écrit un MusicXML bien plus fidèle (version 4.0
+pour Finale 27, contre un « MusicXML de base » pour Finale 2003 à 2010).}
+
+\section{Les quatre étapes}
+
+\capture[0.78]{../capture_prete-fr.png}
+
+\begin{description}[style=nextline,leftmargin=5mm,font=\sffamily\bfseries\color{bordeaux}]
+\item[1. Où sont vos partitions Finale ?]
+\menu{Ajouter un dossier…}, ou glissez le dossier depuis l'Explorateur. Tous les sous-dossiers sont
+parcourus. Da Capo compte aussitôt les partitions trouvées (\fichier{.mus} jusqu'à Finale 2011,
+\fichier{.musx} après). Les copies de secours de Finale (« Sauvegarde de… », « Backup of… ») sont
+ignorées.
+\item[2. Où ranger le résultat ?]
+Un dossier vide, sur un disque qui a de la place (prévoyez trois à quatre fois la taille des
+partitions). Tout y sera rangé, dans la même arborescence que vos dossiers d'origine.
+\item[3. Avec quel Finale ?]
+Le plus récent est proposé et recommandé. La première fois, cliquez sur \menu{Diagnostic…}
+(section~\ref{sec:diagnostic}).
+\item[4. Que produire ?]
+Le \textbf{MusicXML}, toujours. Le \textbf{PDF de référence} : la partition exactement comme Finale
+l'imprime — c'est votre étalon pour vérifier, et une archive qui s'ouvrira toujours. Les
+\textbf{fichiers MuseScore}, si MuseScore Studio est installé.
+\end{description}
+
+Cliquez ensuite sur \menu{Commencer}.
+
+\section{Pendant l'export}
+
+\capture[0.78]{../capture_export-fr.png}
+
+Finale s'ouvre et travaille seul : on le voit ouvrir chaque partition, exporter, refermer.
+\textbf{Ne touchez ni à la souris ni au clavier} : un clic au mauvais moment détournerait une boîte
+de dialogue. Comptez de quelques secondes à une minute par partition ; pour plusieurs centaines,
+lancez le travail le soir et laissez tourner la nuit. L'ordinateur ne se met pas en veille.
+
+\begin{itemize}
+\item \menu{Arrêter} termine la partition en cours puis s'arrête proprement.
+\item Le bouton devient alors \menu{Reprendre} : Da Capo saute tout ce qui est déjà fait.
+      Même après une coupure de courant, il ne refait que la partition en cours.
+\item Si Finale affiche un message (fichier ancien à convertir, police manquante…), Da Capo le lit,
+      le note dans le rapport, puis le referme. À la question « Enregistrer les modifications ? »,
+      il répond toujours \textbf{Non}.
+\item Si Finale ne répond plus, Da Capo l'arrête, le relance et passe à la partition suivante ;
+      la partition rebelle est marquée en échec et sera retentée à la reprise.
+\end{itemize}
+
+\section{Le dossier de travail}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{>{\ttfamily\small}l X}
+\toprule
+originaux/ & les copies de vos partitions, en lecture seule \\
+musicxml/ & les MusicXML exportés par Finale — à garder précieusement \\
+pdf-finale/ & les PDF de référence \\
+musescore/ & les partitions MuseScore (\fichier{.mscz}) et leur PDF \\
+rapport.html & le bilan, à ouvrir dans le navigateur \\
+\_dacapo/ & le journal qui permet de reprendre, et le relevé du diagnostic \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Le dossier entier peut être déplacé ou copié (sur un disque de sauvegarde, par exemple) : les liens
+du rapport suivent.
+
+\section{Le rapport}
+
+\menu{Ouvrir le rapport} affiche une page avec, en haut, le bilan (partitions, MusicXML, PDF,
+MuseScore, échecs), puis une ligne par partition :
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+\textcolor{alert}{\rule{4pt}{9pt}}\ \textbf{rouge} & l'export a échoué ; la raison est écrite (et les messages de Finale) \\
+\textcolor{or}{\rule{4pt}{9pt}}\ \textbf{orange} & exporté, mais à vérifier : partition vide, message de Finale pendant l'export \\
+\textcolor{sapin}{\rule{4pt}{9pt}}\ \textbf{vert} & tout s'est bien passé \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Pour chaque partition : le nombre de parties, de mesures et de notes trouvées dans le MusicXML, et
+des liens vers chaque fichier produit.
+
+\section{Vérifier une partition}
+
+Ouvrez côte à côte le \textbf{PDF de référence} (Finale) et le \textbf{PDF MuseScore}. Les notes,
+les rythmes, les paroles, les nuances et les parties passent bien en MusicXML. Ce qui demande
+souvent une retouche dans MuseScore :
+\begin{itemize}
+\item la \textbf{mise en page} : sauts de système et de page, espacements, taille de la portée ;
+\item les \textbf{expressions personnalisées} et symboles rares, les polices musicales particulières ;
+\item la \textbf{forme des liaisons} et la position fine des textes ;
+\item ce qui ne concerne que la lecture audio de Finale (Human Playback).
+\end{itemize}
+Commencez par les partitions dont vous vous servez encore ; les autres restent archivées en trois
+exemplaires (original, MusicXML, PDF).
+
+\attention{Gardez les originaux \fichier{.mus} et les copies du dossier de travail. Un jour,
+un meilleur convertisseur pourra refaire l'export à partir d'eux.}
+
+\section{Le diagnostic}\label{sec:diagnostic}
+
+Chaque version de Finale range ses commandes un peu différemment. Da Capo les retrouve par leur nom,
+en français comme en anglais. Le bouton \menu{Diagnostic…} le vérifie sur votre ordinateur : il
+ouvre Finale avec la copie d'une partition, relève ses menus et ses fenêtres, puis referme tout,
+sans rien modifier.
+
+\capture[0.78]{../capture_diagnostic-fr.png}
+
+Si tout est reconnu, c'est prêt. Sinon, \menu{Envoyer le relevé} le transmet au développeur, qui
+adaptera Da Capo à votre Finale ; le relevé est aussi enregistré dans \fichier{\_dacapo}.
+
+\section{Problèmes fréquents}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.38\linewidth} X}
+\toprule
+\textbf{Message} & \textbf{Que faire} \\
+\midrule
+Finale ne démarre pas & L'ouvrir une fois à la main (activation, mise à jour), le refermer, recommencer. \\
+Commande introuvable dans les menus & Faire un diagnostic et l'envoyer. \\
+Imprimante CutePDF Writer introuvable & L'installer (gratuite), ou décocher le PDF de référence. \\
+Finale n'a pas ouvert la partition à temps & Fichier abîmé ou très gros : l'ouvrir à la main dans Finale pour voir. \\
+MuseScore a mis trop longtemps & Ouvrir le MusicXML directement dans MuseScore. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Mises à jour et confidentialité}
+
+Au démarrage, Da Capo vérifie discrètement s'il existe une nouvelle version et propose de
+l'installer. Avec votre accord, un rapport est envoyé s'il rencontre un problème : version du
+programme et du système, erreur rencontrée ; les noms de vos fichiers et votre nom d'utilisateur
+sont masqués. Aucune partition n'est jamais envoyée.
+
+Sous macOS et Linux, Finale ne peut pas être piloté : Da Capo y copie les partitions, vérifie des
+MusicXML exportés ailleurs et prépare les fichiers MuseScore.
+
+\vfill
+{\footnotesize\color{summit}\sffamily
+Finale est une marque de MakeMusic, MuseScore de Muse Group ; Da Capo n'est lié à aucun des deux.
+Polices Source Sans 3 et EB Garamond (SIL Open Font License). Exemples de ce manuel : fichiers fictifs.\par}
+
+\end{document}
