@@ -2,6 +2,11 @@
 
 ## English
 
+### 0.1.1
+
+- Windows: the “File name” box of the modern Save As dialog is now found (it is not where the
+  older dialog keeps it). Checked on Windows by driving Notepad end to end.
+
 ### 0.1.0
 
 - First version. Finds every Finale score (.mus, .musx) in the chosen folders, makes verified
@@ -13,6 +18,11 @@
 - Diagnostics: records Finale's menus and windows, to adapt Da Capo to an unknown version.
 
 ## Francais
+
+### 0.1.1
+
+- Windows : le champ « Nom du fichier » de la boîte Enregistrer sous moderne est trouvé (il n'est
+  pas au même endroit que dans l'ancienne). Vérifié sous Windows en pilotant le Bloc-notes de bout en bout.
 
 ### 0.1.0
 
