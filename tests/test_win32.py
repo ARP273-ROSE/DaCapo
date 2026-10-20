@@ -36,7 +36,9 @@ def test_bloc_notes_enregistrer_sous(tmp_path):
         def boite():
             return next((d for d in win32.dialogues(pid=proc.pid) if win32.champ_nom_fichier(d)), None)
         d = win32.attendre(boite, 20)
-        assert d is not None
+        assert d is not None, "\n".join(x.description() for x in win32.dialogues(pid=proc.pid)) or \
+            "aucune boîte #32770 : " + repr([(win32.classe(h), win32.texte(h))
+                                             for h in win32.fenetres(pid=proc.pid)])
         cible = tmp_path / "essai.txt"
         assert win32.remplir_et_valider(d, str(cible))
         assert win32.attendre(lambda: cible.exists() and cible.stat().st_size > 0, 20)

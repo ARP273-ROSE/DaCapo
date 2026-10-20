@@ -74,7 +74,7 @@ GW_OWNER = 4
 VK_RETURN, VK_ESCAPE = 0x0D, 0x1B
 #: Champs « Nom du fichier » des boîtes Ouvrir / Enregistrer (cmb13, edt1)
 #: et bouton par défaut (IDOK).
-ID_NOM_FICHIER = (0x047C, 0x0480)
+ID_NOM_FICHIER = (0x047C, 0x0480, 0x03E9)   # 1148, 1152, et 1001 (Enregistrer sous moderne)
 IDOK, IDCANCEL = 1, 2
 
 
@@ -268,14 +268,27 @@ def champ_nom_fichier(d: Dialogue) -> int | None:
     """Le champ où taper le chemin dans une boîte Ouvrir / Enregistrer sous,
     ancienne (Edit id 1152) ou moderne (ComboBox id 1148 contenant un Edit)."""
     c = d.par_ident(*ID_NOM_FICHIER)
-    if c is None:
+    if c is not None:
+        if c.classe == "Edit":
+            return c.hwnd
+        for h in enfants(c.hwnd):
+            if classe(h) == "Edit":
+                return h
+    # Repli : la boîte moderne (IFileDialog) loge le nom du fichier dans un
+    # Edit enfant d'une liste déroulante ; à défaut, le premier Edit visible
+    # d'une boîte qui a un bouton OK — mais jamais celui de la barre
+    # d'adresse ni de la recherche (enfants de classes de l'Explorateur).
+    if d.par_ident(IDOK) is None:
         return None
-    if c.classe == "Edit":
-        return c.hwnd
-    for h in enfants(c.hwnd):
-        if classe(h) == "Edit":
-            return h
-    return c.hwnd
+    edits = [c for c in d.controles if c.classe == "Edit" and c.visible and c.actif]
+    for e in edits:
+        if classe(user32.GetParent(e.hwnd)) in ("ComboBox", "ComboBoxEx32"):
+            return e.hwnd
+    for e in edits:
+        if classe(user32.GetParent(e.hwnd)) not in ("Breadcrumb Parent", "SearchEditBoxWrapperClass",
+                                                     "UniversalSearchBand", "ToolbarWindow32"):
+            return e.hwnd
+    return None
 
 
 def remplir_et_valider(d: Dialogue, chemin: str) -> bool:
