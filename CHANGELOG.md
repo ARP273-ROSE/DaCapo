@@ -2,6 +2,12 @@
 
 ## English
 
+### 0.1.2
+
+- Signed updates: Da Capo installs an update only if its archive is listed in a manifest
+  signed by the publisher's key (Ed25519, kept off GitHub); a stolen GitHub access can no longer
+  push code to installed copies. The address reached after redirects is checked as well.
+
 ### 0.1.1
 
 - Windows: the “File name” box of the modern Save As dialog is now found (it is not where the
@@ -18,6 +24,13 @@
 - Diagnostics: records Finale's menus and windows, to adapt Da Capo to an unknown version.
 
 ## Francais
+
+### 0.1.2
+
+- Mises à jour signées : Da Capo n'installe plus une mise à jour que si son archive figure
+  dans un manifeste signé par la clé de l'éditeur (Ed25519, hors de GitHub) ; un accès GitHub volé
+  ne peut plus pousser de code sur les postes. L'adresse atteinte après les redirections est
+  vérifiée elle aussi.
 
 ### 0.1.1
 
