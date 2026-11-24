@@ -2,6 +2,10 @@
 
 ## English
 
+### 0.1.3
+
+- Security: bundled Python 3.14.10 (3.12.10 no longer received security fixes on Windows); the interpreter downloaded at build time is checked against its SHA-256. Incident reports: no more false “watchdog without heartbeat” warning at start-up.
+
 ### 0.1.2
 
 - Signed updates: Da Capo installs an update only if its archive is listed in a manifest
@@ -24,6 +28,10 @@
 - Diagnostics: records Finale's menus and windows, to adapt Da Capo to an unknown version.
 
 ## Francais
+
+### 0.1.3
+
+- Sécurité : Python embarqué 3.14.10 (la 3.12.10 ne recevait plus de correctifs de sécurité sous Windows) ; l'interpréteur téléchargé à la construction est vérifié par son empreinte SHA-256. Rapports d'incident : plus de faux avertissement « vigie sans battement » au démarrage.
 
 ### 0.1.2
 
