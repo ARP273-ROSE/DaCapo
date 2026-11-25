@@ -10,7 +10,8 @@
   OK (~9 s/partition), menus tous reconnus. 3 bugs corrigés sur main (pas encore publiés, **0.1.4 en attente
   du re-test réel**) : boîtes de fichier validées par Da Capo comptées comme imprévues (tout en orange),
   fenêtre de progression annulée (seul bouton Cancel), boîte d'options à champ texte prise pour une boîte
-  de fichier ; + « Ne pas vérifier » sur la boîte de mise à jour. Tests : `tests/test_boites.py`.
+  de fichier ; + « Ne pas vérifier » sur la boîte de mise à jour ; 2e essai : fenêtre de lancement
+  refermée sans être consignée, boîte de fichier jamais prise pour une progression. Tests : `tests/test_boites.py`.
 - (avant) **aucun relevé reçu** (pas de `rapports/dacapo` dans pwa-rapports) → le Diagnostic n'a jamais tourné.
 
 ### Fonctions

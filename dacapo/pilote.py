@@ -111,13 +111,33 @@ MOTS_PROGRESSION = ("status", "statut", "progress", "progression", "converting",
 
 def est_progression(d: win32.Dialogue) -> bool:
     """Boîte sans autre bouton qu'Annuler (ou sans bouton actif), ou dont le
-    titre annonce une progression et qui n'attend aucune validation."""
+    titre annonce une progression et qui n'attend aucune validation. Jamais
+    une boîte Ouvrir / Enregistrer (ses boutons DirectUI ne se lisent pas)."""
+    if win32.est_boite_fichier(d):
+        return False
     boutons = [normaliser(b.texte) for b in d.boutons()]
     if all(b in BOUTONS_ANNULER for b in boutons):
         return True
     titre = normaliser(d.titre)
     return any(m in titre for m in MOTS_PROGRESSION) and not any(
         b in BOUTONS_VALIDER for b in boutons)
+
+
+# Fenêtre de lancement de Finale (« Setup Wizard / Default Document / Template /
+# Open… » et une astuce au hasard) : elle peut surgir après le démarrage ; on la
+# referme par son bouton Fermer, sans la compter comme imprévue.
+ID_LANCEMENT = (1165, 1166, 1167, 1171, 1173, 1178)
+ID_LANCEMENT_FERMER = 1178
+LIBELLES_LANCEMENT = ("setup wizard", "default document", "assistant de configuration",
+                      "document par defaut")
+
+
+def est_lancement(d: win32.Dialogue) -> bool:
+    ids = {c.ident for c in d.controles if c.classe == "Button"}
+    if len(ids & set(ID_LANCEMENT)) >= 3:
+        return True
+    textes = {normaliser(c.texte) for c in d.boutons()}
+    return sum(1 for t in LIBELLES_LANCEMENT if t in textes) >= 2
 
 
 def bouton_pour(d: win32.Dialogue):
@@ -207,7 +227,17 @@ class PiloteFinale:
 
     def _a_laisser(self, d: win32.Dialogue) -> bool:
         """Boîte à laisser tranquille : celle qu'on vient de valider, ou une
-        fenêtre de progression."""
+        fenêtre de progression. La fenêtre de lancement est refermée ici."""
+        if est_lancement(d):
+            b = d.par_ident(ID_LANCEMENT_FERMER) or d.bouton("fermer", "close")
+            if d.hwnd not in self._progressions:
+                self._progressions.add(d.hwnd)
+                self.noter("fenêtre de lancement de Finale → fermée")
+            if b:
+                win32.cliquer(b.hwnd)
+            else:
+                win32.fermer(d.hwnd)
+            return True
         if d.hwnd in self._validees:
             return True
         if not d.message.strip() and d.titre in self._validees.values():

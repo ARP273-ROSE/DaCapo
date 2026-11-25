@@ -148,3 +148,29 @@ def test_pas_de_message_vide_dans_les_imprevus(faux_windows):
     ecran["boites"] = [Dialogue(5, "Finale", PID, [bouton(6, "OK", 1)])]
     p._imprevus()
     assert p.imprevus == ["Finale"]
+
+
+# ----------------------------------------------------------------- 2e essai réel
+
+LANCEMENT = Dialogue(90, "", PID, [
+    Controle(91, "Static", 1447, "Are you a new Finale user? Watch the videos…", True, True),
+    bouton(92, "Setup Wizard", 1165), bouton(93, "Default Document", 1166), bouton(94, "Template", 1167),
+    bouton(95, "Open", 1171), bouton(96, "Import MusicXML File…", 1173), bouton(97, "C&lose", 1178),
+    Controle(98, "ComboBox", 1445, "Open Recent File", True, True)])
+
+OUVRIR_MODERNE = Dialogue(100, "Open", PID, [             # boutons DirectUI : aucun Button lisible
+    Controle(101, "DirectUIHWND", 0, "", True, True), Controle(102, "NamespaceTreeControl", 0, "", True, True)])
+
+
+def test_boite_de_fichier_jamais_une_progression():
+    assert win32.est_boite_fichier(OUVRIR_MODERNE)
+    assert not pilote.est_progression(OUVRIR_MODERNE)
+
+
+def test_fenetre_de_lancement_fermee_sans_etre_consignee(faux_windows):
+    p, ecran = faux_windows
+    assert pilote.est_lancement(LANCEMENT)
+    assert not any(pilote.est_lancement(d) for d in (OUVRIR, OPTIONS_MIDI, MISE_A_JOUR, MIDI_STATUS))
+    ecran["boites"] = [LANCEMENT]
+    assert p._imprevus() == 0
+    assert ecran["clics"] == [97] and p.imprevus == []
