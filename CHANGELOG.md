@@ -2,6 +2,14 @@
 
 ## English
 
+### 0.1.4
+
+- First real run against Finale 27.4 (22 tutorial scores, plus a MIDI file): all exported. Fixes found there:
+  the Open/Export boxes filled in by Da Capo itself are no longer reported as unexpected (every score was
+  marked “to check”) nor closed by force; progress windows (“MIDI File Status”, conversions) are left alone
+  instead of being cancelled; an options box with a text field is no longer mistaken for a file box;
+  Finale's start-up window is closed without being reported; “Don't check” is chosen in the update box.
+
 ### 0.1.3
 
 - Security: bundled Python 3.14.10 (3.12.10 no longer received security fixes on Windows); the interpreter downloaded at build time is checked against its SHA-256. Incident reports: no more false “watchdog without heartbeat” warning at start-up.
@@ -28,6 +36,16 @@
 - Diagnostics: records Finale's menus and windows, to adapt Da Capo to an unknown version.
 
 ## Francais
+
+### 0.1.4
+
+- Premier essai réel contre Finale 27.4 (22 partitions de tutoriel, plus un fichier MIDI) : tout est exporté.
+  Corrections trouvées à cette occasion : les boîtes Ouvrir / Exporter remplies par Da Capo lui-même ne sont
+  plus signalées comme imprévues (toutes les partitions passaient « à vérifier ») ni fermées de force ; les
+  fenêtres de progression (« MIDI File Status », conversions) sont laissées tranquilles au lieu d'être
+  annulées ; une boîte d'options avec un champ texte n'est plus prise pour une boîte de fichier ; la
+  fenêtre de lancement de Finale est refermée sans être signalée ; « Ne pas vérifier » est choisi dans la
+  boîte de mise à jour.
 
 ### 0.1.3
 

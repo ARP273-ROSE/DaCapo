@@ -2,13 +2,12 @@
 
 ## État au 25/11/2026
 
-**Version : 0.1.3** (24/11/2026) — toujours jamais essayée contre un vrai Finale.
+**Version : 0.1.4** (25/11/2026) — **essayée contre un vrai Finale 27.4** : 22/22 tutoriels + MIDI.
 
 - 0.1.1 : boîte « Enregistrer sous » moderne (id 1001). 0.1.2 : MAJ signées Ed25519.
   0.1.3 : Python embarqué 3.14.10 vérifié par SHA-256.
 - 25/11/2026 : **premier essai réel** (session du PC Windows, Finale 27.4 + MuseScore 4) : 22/22 tutoriels
-  OK (~9 s/partition), menus tous reconnus. 3 bugs corrigés sur main (pas encore publiés, **0.1.4 en attente
-  du re-test réel**) : boîtes de fichier validées par Da Capo comptées comme imprévues (tout en orange),
+  OK (~9 s/partition), menus tous reconnus. 3 bugs corrigés sur main (publiés en **0.1.4**) : boîtes de fichier validées par Da Capo comptées comme imprévues (tout en orange),
   fenêtre de progression annulée (seul bouton Cancel), boîte d'options à champ texte prise pour une boîte
   de fichier ; + « Ne pas vérifier » sur la boîte de mise à jour ; 2e essai : fenêtre de lancement
   refermée sans être consignée, boîte de fichier jamais prise pour une progression. Tests : `tests/test_boites.py`.
@@ -33,8 +32,10 @@
   🔴 Ne PAS forcer `QT_QPA_PLATFORM=offscreen` : MuseScore charge le thème GTK et s'arrête sans écran.
 
 ### Reste à vérifier
-- ⏳ **Diagnostic sur un vrai Finale** (poste Windows avec Finale 2006 + Finale récent) : libellés
-  exacts des menus, boîtes au démarrage, export Dolet Light vs export intégré.
+- ✅ **Diagnostic sur un vrai Finale 27.4 EN** (25/11/2026, poste Windows) : menus File > Open / Close /
+  Export > MusicXML… / PDF… / Print reconnus ; 22/22 tutoriels exportés (~9 s/partition) ; aller-retour
+  MuseScore identique note à note 21/22 (le 22e : `<mode>` omis sur une tablature).
+- ⏳ **Finale 2006** (les vrais .mus à convertir) : libellés FR, export Dolet Light vs intégré.
 - ⏳ Impression vers CutePDF (boîte d'impression propre à Finale ?).
 
 ### Fabrication
