@@ -76,6 +76,11 @@ VK_RETURN, VK_ESCAPE = 0x0D, 0x1B
 #: et bouton par défaut (IDOK).
 ID_NOM_FICHIER = (0x047C, 0x0480, 0x03E9)   # 1148, 1152, et 1001 (Enregistrer sous moderne)
 IDOK, IDCANCEL = 1, 2
+#: Signes d'une vraie boîte Ouvrir / Enregistrer de Windows : les champs
+#: cmb13 / edt1 de l'ancienne boîte, ou l'Explorateur embarqué de la moderne.
+ID_BOITE_FICHIER = (0x047C, 0x0480)          # 1148, 1152
+CLASSES_BOITE_FICHIER = ("ComboBoxEx32", "DirectUIHWND", "NamespaceTreeControl",
+                         "SHELLDLL_DefView")
 
 
 def normaliser(texte: str) -> str:
@@ -264,9 +269,19 @@ def dialogues(pid: int | None = None) -> list[Dialogue]:
     return [lire_dialogue(h) for h in fenetres(pid=pid, classe_voulue="#32770")]
 
 
+def est_boite_fichier(d: Dialogue) -> bool:
+    """Vraie boîte Ouvrir / Enregistrer sous de Windows — pas une boîte de
+    Finale qui aurait simplement un champ texte et un bouton OK (« Import MIDI
+    File Options »…)."""
+    return any(c.ident in ID_BOITE_FICHIER or c.classe in CLASSES_BOITE_FICHIER
+               for c in d.controles)
+
+
 def champ_nom_fichier(d: Dialogue) -> int | None:
     """Le champ où taper le chemin dans une boîte Ouvrir / Enregistrer sous,
     ancienne (Edit id 1152) ou moderne (ComboBox id 1148 contenant un Edit)."""
+    if not est_boite_fichier(d):
+        return None
     c = d.par_ident(*ID_NOM_FICHIER)
     if c is not None:
         if c.classe == "Edit":

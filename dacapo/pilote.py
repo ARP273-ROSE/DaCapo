@@ -88,7 +88,8 @@ def entree_quitter(entrees: list[Entree]) -> Entree | None:
 # Boutons à presser devant une boîte imprévue, par ordre de préférence. Une
 # question « Enregistrer les modifications ? » reçoit toujours NON.
 BOUTONS_ENREGISTRER_NON = ("non", "no", "ne pas enregistrer", "don't save", "dont save")
-BOUTONS_PREFERES = ("plus tard", "later", "continuer", "continue", "ok", "oui", "yes",
+BOUTONS_PREFERES = ("plus tard", "later", "ne pas verifier", "don't check", "don’t check",
+                    "do not check", "continuer", "continue", "ok", "oui", "yes",
                     "ignorer", "ignore", "fermer", "close", "terminer", "finish",
                     "non", "no", "annuler", "cancel")
 
@@ -97,6 +98,26 @@ def question_enregistrer(message: str) -> bool:
     m = normaliser(message)
     return ("enregistr" in m or "save" in m or "sauvegard" in m) and (
         "modif" in m or "change" in m or "?" in m)
+
+
+# Fenêtre de progression (« MIDI File Status », conversion d'un vieux .mus…) :
+# on n'y touche pas, son seul bouton l'annulerait. On attend qu'elle parte.
+BOUTONS_ANNULER = ("annuler", "cancel", "arreter", "stop", "abandonner", "abort")
+BOUTONS_VALIDER = ("ok", "oui", "yes", "continuer", "continue", "fermer", "close",
+                   "terminer", "finish")
+MOTS_PROGRESSION = ("status", "statut", "progress", "progression", "converting", "conversion",
+                    "transcrib", "transcription", "please wait", "patientez", "en cours")
+
+
+def est_progression(d: win32.Dialogue) -> bool:
+    """Boîte sans autre bouton qu'Annuler (ou sans bouton actif), ou dont le
+    titre annonce une progression et qui n'attend aucune validation."""
+    boutons = [normaliser(b.texte) for b in d.boutons()]
+    if all(b in BOUTONS_ANNULER for b in boutons):
+        return True
+    titre = normaliser(d.titre)
+    return any(m in titre for m in MOTS_PROGRESSION) and not any(
+        b in BOUTONS_VALIDER for b in boutons)
 
 
 def bouton_pour(d: win32.Dialogue):
@@ -149,6 +170,8 @@ class PiloteFinale:
         self.entrees: list[Entree] = []
         self._journal = journal or (lambda t: None)
         self.imprevus: list[str] = []          # boîtes rencontrées pour la partition en cours
+        self._validees: dict[int, str] = {}    # boîtes de fichier remplies par Da Capo : hwnd → titre
+        self._progressions: set[int] = set()   # fenêtres de progression déjà signalées
 
     # ------------------------------------------------------------ outils
     def noter(self, texte: str) -> None:
@@ -175,14 +198,40 @@ class PiloteFinale:
     def relire_menus(self) -> None:
         self.entrees = win32.menus(self.fenetre) if self.fenetre else []
 
+    def _valider_boite(self, d: win32.Dialogue, chemin: str) -> None:
+        """Remplit et valide une boîte de fichier, et la retient : en train de
+        se refermer, elle n'est ni une imprévue ni à refermer (WM_CLOSE
+        pourrait annuler l'enregistrement)."""
+        self._validees[d.hwnd] = d.titre
+        win32.remplir_et_valider(d, chemin)
+
+    def _a_laisser(self, d: win32.Dialogue) -> bool:
+        """Boîte à laisser tranquille : celle qu'on vient de valider, ou une
+        fenêtre de progression."""
+        if d.hwnd in self._validees:
+            return True
+        if not d.message.strip() and d.titre in self._validees.values():
+            return True
+        if est_progression(d):
+            if d.hwnd not in self._progressions:
+                self._progressions.add(d.hwnd)
+                self.noter(f"progression — {d.description()}\n   → on attend")
+            return True
+        return False
+
+    def _consigner(self, d: win32.Dialogue) -> None:
+        texte = f"{d.titre} : {d.message}" if d.message.strip() else d.titre
+        if texte.strip():
+            self.imprevus.append(texte[:300])
+
     def _imprevus(self, sauf=lambda d: False) -> int:
         """Referme les boîtes inattendues de Finale ; renvoie leur nombre."""
         n = 0
         for d in win32.dialogues(pid=self.pid):
-            if sauf(d):
+            if sauf(d) or self._a_laisser(d):
                 continue
             b = bouton_pour(d)
-            self.imprevus.append(f"{d.titre} : {d.message}"[:300])
+            self._consigner(d)
             self.noter(f"boîte imprévue — {d.description()}\n   → {b.texte if b else 'fermeture'}")
             if b:
                 win32.cliquer(b.hwnd)
@@ -255,9 +304,11 @@ class PiloteFinale:
     # ------------------------------------------------------------ une partition
     def ouvrir(self, fichier: Path) -> None:
         self.imprevus = []
+        self._validees.clear()
+        self._progressions.clear()
         self._commande(entree_ouvrir(self.entrees), "ouvrir")
         d = self._attendre_boite_fichier(self.delais.boite)
-        win32.remplir_et_valider(d, str(fichier))
+        self._valider_boite(d, str(fichier))
         cle = normaliser(fichier.stem)[:20]
 
         def ouvert():
@@ -276,16 +327,16 @@ class PiloteFinale:
         if entree is not None:
             self._commande(entree, nom)
         d = self._attendre_boite_fichier(self.delais.boite, pid=pid_boite)
-        win32.remplir_et_valider(d, str(cible))
+        self._valider_boite(d, str(cible))
 
         def produit():
             # « Remplacer le fichier existant ? » → Oui ; compte rendu → OK
             for b in win32.dialogues(pid=self.pid):
-                if win32.champ_nom_fichier(b):
+                if win32.champ_nom_fichier(b) or self._a_laisser(b):
                     continue
                 choix = b.bouton("oui", "yes", "remplacer", "replace", "ok")
                 self.noter(f"pendant l'export — {b.description()}")
-                self.imprevus.append(f"{b.titre} : {b.message}"[:300])
+                self._consigner(b)
                 if choix:
                     win32.cliquer(choix.hwnd)
                 else:
@@ -353,7 +404,7 @@ class PiloteFinale:
         if b is None:
             raise FinaleBloque("cutepdf_boite")
         cible.parent.mkdir(parents=True, exist_ok=True)
-        win32.remplir_et_valider(b, str(cible))
+        self._valider_boite(b, str(cible))
         p = win32.attendre(lambda: trouver_produit(cible.parent, cible.stem, depuis, (".pdf",)),
                            self.delais.export, 1.0)
         if p is None or not win32_stable(p):
@@ -366,6 +417,8 @@ class PiloteFinale:
 
         def ferme():
             for d in win32.dialogues(pid=self.pid):
+                if self._a_laisser(d):
+                    continue
                 b = d.bouton(*BOUTONS_ENREGISTRER_NON) or bouton_pour(d)
                 if b:
                     win32.cliquer(b.hwnd)
