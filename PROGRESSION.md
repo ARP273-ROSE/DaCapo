@@ -1,8 +1,12 @@
 # Da Capo — progression
 
-## État au 20/10/2026
+## État au 25/11/2026
 
-**Version : 0.1.0** — première version, jamais essayée contre un vrai Finale.
+**Version : 0.1.3** (24/11/2026) — toujours jamais essayée contre un vrai Finale.
+
+- 0.1.1 : boîte « Enregistrer sous » moderne (id 1001). 0.1.2 : MAJ signées Ed25519.
+  0.1.3 : Python embarqué 3.14.10 vérifié par SHA-256.
+- 25/11/2026 : **aucun relevé reçu** (pas de `rapports/dacapo` dans pwa-rapports) → le Diagnostic n'a jamais tourné.
 
 ### Fonctions
 - Inventaire des `.mus` / `.musx` (sous-dossiers, copies de secours de Finale ignorées).
